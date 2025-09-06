@@ -8,11 +8,11 @@ Emoji: 🏕️ CAMP Extensions
 > Install via ViolentMonkey using the CDN (jsDelivr) or raw file URLs below. For stability prefer jsDelivr and pin to a tag or commit SHA instead of `@main`.
 
 - GitHub userscript
-  - https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/scripts/github.com/github-tools.user.js
+  - https://raw.githubusercontent.com/camp-plus/camp-xt/main/scripts/github.com/github-tools.user.js
 - Gmail userscript
-  - https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/scripts/gmail.com/gmail-tools.user.js
+  - https://raw.githubusercontent.com/camp-plus/camp-xt/main/scripts/gmail.com/gmail-tools.user.js
 - Jira userscript
-  - https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/scripts/jira.atlassian.com/jira-tools.user.js
+  - https://raw.githubusercontent.com/camp-plus/camp-xt/main/scripts/jira.atlassian.com/jira-tools.user.js
 
 ## Discovery bookmarklet
 Copy-paste the following into a bookmark's URL field. Clicking it will open the CAMP Overlay Loader for the current site (if supported):
