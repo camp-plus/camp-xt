@@ -332,6 +332,9 @@ if (!window.CAMPOverlay || typeof window.CAMPOverlay !== 'function') {
 
   // Expose a simple version marker to help userscripts detect readiness/source
   try { window.CAMPOverlay.__CAMP_VERSION = '1.0.0'; } catch (e) {}
+
+  // Provide a readiness primitive so userscripts can `await window.__CAMP_ready` instead of polling.
+  try { window.__CAMP_ready = Promise.resolve(window.CAMPOverlay); } catch (e) {}
 } else {
   try { console.info('[CAMPOverlay] already defined on window, skipping re-initialization'); } catch (e) {}
 }

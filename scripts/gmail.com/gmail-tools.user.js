@@ -66,18 +66,19 @@
     } catch (e) { console.error('CAMP Gmail load error', e); }
   };
 
-  const init = () => {
+  const init = async () => {
     try {
-      // Use the page's window when available (unsafeWindow in userscript managers) so we
-      // instantiate the CAMPOverlay that was injected into the page context, not the
-      // sandboxed userscript window.
       const pageWindow = (typeof unsafeWindow !== 'undefined') ? unsafeWindow : window;
+      try {
+        if (pageWindow.__CAMP_ready && pageWindow.__CAMP_ready.then) {
+          await pageWindow.__CAMP_ready;
+        }
+      } catch (e) { console.warn('waiting for pageWindow.__CAMP_ready failed', e); }
+
       const CampOverlayCtor = pageWindow && pageWindow.CAMPOverlay;
 
-      if (!CampOverlayCtor) {
-        // If the overlay isn't available yet on the page, retry shortly.
-        // This avoids "CAMPOverlay is not a constructor" when scripts are still loading.
-        console.warn('CAMPOverlay not found on pageWindow, retrying...');
+      if (!CampOverlayCtor || typeof CampOverlayCtor !== 'function') {
+        console.warn('CAMPOverlay not available on pageWindow after readiness wait; will retry shortly');
         setTimeout(init, 500);
         return;
       }

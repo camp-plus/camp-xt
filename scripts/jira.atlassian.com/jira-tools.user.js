@@ -66,13 +66,16 @@
     } catch (e) { console.error('CAMP Jira load error', e); }
   };
 
-  const init = () => {
+  const init = async () => {
     try {
       const pageWindow = (typeof unsafeWindow !== 'undefined') ? unsafeWindow : window;
-      const CampOverlayCtor = pageWindow && pageWindow.CAMPOverlay;
+      try {
+        if (pageWindow.__CAMP_ready && pageWindow.__CAMP_ready.then) await pageWindow.__CAMP_ready;
+      } catch (e) { console.warn('waiting for pageWindow.__CAMP_ready failed', e); }
 
-      if (!CampOverlayCtor) {
-        console.warn('CAMPOverlay not found on pageWindow, retrying...');
+      const CampOverlayCtor = pageWindow && pageWindow.CAMPOverlay;
+      if (!CampOverlayCtor || typeof CampOverlayCtor !== 'function') {
+        console.warn('CAMPOverlay not available on pageWindow after readiness wait; will retry shortly');
         setTimeout(init, 500);
         return;
       }
