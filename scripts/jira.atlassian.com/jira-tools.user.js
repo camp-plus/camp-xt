@@ -5,8 +5,8 @@
 // @description  CAMP tools for Jira
 // @author       CAMP Team
 // @match        https://jira.atlassian.com/*
-// @updateURL    https://raw.githubusercontent.com/camp-plus/camp-xt/main/scripts/jira.atlassian.com/jira-tools.user.js
-// @downloadURL  https://raw.githubusercontent.com/camp-plus/camp-xt/main/scripts/jira.atlassian.com/jira-tools.user.js
+// @updateURL    https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/scripts/jira.atlassian.com/jira-tools.user.js
+// @downloadURL  https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/scripts/jira.atlassian.com/jira-tools.user.js
 // @run-at       document-start
 // @grant        GM_setValue
 // @grant        GM_getValue
@@ -16,6 +16,8 @@
   'use strict';
   const load = () => {
     try {
+      // Robust loader: prefer CDN (jsDelivr), fall back to raw, and if the browser blocks execution due to
+      // MIME / nosniff headers, fetch the raw text and inject it as a Blob (type: text/javascript).
       const loadScriptWithFallback = (list, cb) => {
         if (!list || list.length === 0) { cb(new Error('No sources')); return; }
         const src = list[0];
@@ -26,31 +28,40 @@
         document.head.appendChild(s);
       };
 
-      if (!window.CAMPOverlay) {
-        loadScriptWithFallback([
-          'https://raw.githubusercontent.com/camp-plus/camp-xt/main/shared/camp-overlay.js',
-          'https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/shared/camp-overlay.js'
-        ], (err) => {
-          if (err) console.warn('Failed to load camp-overlay:', err);
-          if (!window.CAMPUtils) {
-            loadScriptWithFallback([
-              'https://raw.githubusercontent.com/camp-plus/camp-xt/main/shared/camp-utils.js',
-              'https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/shared/camp-utils.js'
-            ], (err2) => {
-              if (err2) console.warn('Failed to load camp-utils:', err2);
-              setTimeout(init, 700);
-            });
-          } else setTimeout(init, 700);
+      const fetchAndInject = async (url) => {
+        const res = await fetch(url, { cache: 'no-store' });
+        if (!res.ok) throw new Error('Fetch failed: ' + res.status);
+        const text = await res.text();
+        const blob = new Blob([text], { type: 'text/javascript' });
+        const blobUrl = URL.createObjectURL(blob);
+        return new Promise((resolve, reject) => {
+          const s = document.createElement('script');
+          s.src = blobUrl;
+          s.onload = () => { URL.revokeObjectURL(blobUrl); resolve(blobUrl); };
+          s.onerror = (e) => { URL.revokeObjectURL(blobUrl); reject(e); };
+          document.head.appendChild(s);
         });
-      } else if (!window.CAMPUtils) {
-        loadScriptWithFallback([
-          'https://raw.githubusercontent.com/camp-plus/camp-xt/main/shared/camp-utils.js',
-          'https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/shared/camp-utils.js'
-        ], (err2) => {
-          if (err2) console.warn('Failed to load camp-utils:', err2);
+      };
+
+      const overlayCDN = 'https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/shared/camp-overlay.js';
+      const overlayRaw = 'https://raw.githubusercontent.com/camp-plus/camp-xt/main/shared/camp-overlay.js';
+      const utilsCDN = 'https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/shared/camp-utils.js';
+      const utilsRaw = 'https://raw.githubusercontent.com/camp-plus/camp-xt/main/shared/camp-utils.js';
+
+      loadScriptWithFallback([overlayCDN, overlayRaw], async (err) => {
+        if (err) {
+          console.warn('Overlay <script> load failed, attempting fetch+inject:', err);
+          try { await fetchAndInject(overlayRaw); } catch (e) { console.warn('fetch+inject overlay failed', e); }
+        }
+
+        loadScriptWithFallback([utilsCDN, utilsRaw], async (err2) => {
+          if (err2) {
+            console.warn('Utils <script> load failed, attempting fetch+inject:', err2);
+            try { await fetchAndInject(utilsRaw); } catch (e2) { console.warn('fetch+inject utils failed', e2); }
+          }
           setTimeout(init, 700);
         });
-      } else setTimeout(init, 700);
+      });
 
     } catch (e) { console.error('CAMP Jira load error', e); }
   };

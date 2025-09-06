@@ -27,6 +27,9 @@ Script template
 // @downloadURL  https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/scripts/[site]/script.user.js
 
 // NOTE: For predictable auto-updates, pin the CDN path to a tag or commit SHA instead of `@main`, e.g. `@v1.0.0` or `@<commit-sha>`.
+// Recommended pattern for releases:
+// 1) Create a lightweight tag: git tag -a v1.0.0 -m "Release v1.0.0" && git push origin v1.0.0
+// 2) Update the @updateURL/@downloadURL to point to @v1.0.0 on jsDelivr for stable auto-updates.
 // @run-at       document-start
 // @grant        GM_setValue
 // @grant        GM_getValue

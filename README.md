@@ -4,15 +4,15 @@ CAMP-XT is a private, team-focused repository of ViolentMonkey userscripts and a
 
 Emoji: 🏕️ CAMP Extensions
 
-## One-click install (raw URLs)
-> Install via ViolentMonkey using the raw file URLs below (camp-plus organization, main branch).
+## One-click install (CDN / raw URLs)
+> Install via ViolentMonkey using the CDN (jsDelivr) or raw file URLs below. For stability prefer jsDelivr and pin to a tag or commit SHA instead of `@main`.
 
 - GitHub userscript
-  - https://raw.githubusercontent.com/camp-plus/camp-xt/main/scripts/github.com/github-tools.user.js
+  - https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/scripts/github.com/github-tools.user.js
 - Gmail userscript
-  - https://raw.githubusercontent.com/camp-plus/camp-xt/main/scripts/gmail.com/gmail-tools.user.js
+  - https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/scripts/gmail.com/gmail-tools.user.js
 - Jira userscript
-  - https://raw.githubusercontent.com/camp-plus/camp-xt/main/scripts/jira.atlassian.com/jira-tools.user.js
+  - https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/scripts/jira.atlassian.com/jira-tools.user.js
 
 ## Discovery bookmarklet
 Copy-paste the following into a bookmark's URL field. Clicking it will open the CAMP Overlay Loader for the current site (if supported):
