@@ -5,8 +5,8 @@
 // @description  CAMP tools for Gmail
 // @author       CAMP Team
 // @match        https://mail.google.com/*
-// @updateURL    https://raw.githubusercontent.com/camp-plus/camp-xt/main/scripts/gmail.com/gmail-tools.user.js
-// @downloadURL  https://raw.githubusercontent.com/camp-plus/camp-xt/main/scripts/gmail.com/gmail-tools.user.js
+// @updateURL    https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/scripts/gmail.com/gmail-tools.user.js
+// @downloadURL  https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/scripts/gmail.com/gmail-tools.user.js
 // @run-at       document-start
 // @grant        GM_setValue
 // @grant        GM_getValue
@@ -18,12 +18,12 @@
     try {
       if (!window.CAMPOverlay) {
         const s = document.createElement('script');
-        s.src = 'https://raw.githubusercontent.com/camp-plus/camp-xt/main/shared/camp-overlay.js';
+        s.src = 'https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/shared/camp-overlay.js';
         document.head.appendChild(s);
       }
       if (!window.CAMPUtils) {
         const s2 = document.createElement('script');
-        s2.src = 'https://raw.githubusercontent.com/camp-plus/camp-xt/main/shared/camp-utils.js';
+        s2.src = 'https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/shared/camp-utils.js';
         document.head.appendChild(s2);
       }
       setTimeout(init, 800);
