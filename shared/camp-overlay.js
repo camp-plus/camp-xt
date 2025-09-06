@@ -15,7 +15,14 @@ Features implemented:
 This file is intended to be loaded by userscripts to provide the overlay UI.
 */
 
-class CAMPOverlay {
+(function(){
+  // Avoid redeclaring CAMPOverlay when the script is injected multiple times (CDN + blob fallbacks).
+  if (window.CAMPOverlay && typeof window.CAMPOverlay === 'function') {
+    try { console.info('[CAMPOverlay] already defined on window, skipping re-initialization'); } catch (e) {}
+    return;
+  }
+
+  class CAMPOverlay {
   constructor(siteName = 'Site', version = '1.0.0', options = {}) {
     this.siteName = siteName;
     this.version = version;
@@ -324,5 +331,8 @@ class CAMPOverlay {
   }
 }
 
-// Export for use in userscripts
-window.CAMPOverlay = CAMPOverlay;
+  // Export for use in userscripts
+  window.CAMPOverlay = CAMPOverlay;
+  // Expose a simple version marker to help userscripts detect readiness/source
+  try { window.CAMPOverlay.__CAMP_VERSION = '1.0.0'; } catch (e) {}
+})();
