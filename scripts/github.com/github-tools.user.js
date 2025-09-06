@@ -14,96 +14,127 @@
 
 (function () {
   'use strict';
-  // Load shared overlay and utils with fallback sources
-  const load = () => {
+
+  const overlayCDN = 'https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/shared/camp-overlay.js';
+  const overlayRaw = 'https://raw.githubusercontent.com/camp-plus/camp-xt/main/shared/camp-overlay.js';
+  const utilsCDN = 'https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/shared/camp-utils.js';
+  const utilsRaw = 'https://raw.githubusercontent.com/camp-plus/camp-xt/main/shared/camp-utils.js';
+
+  const appendScript = (src) => new Promise((resolve, reject) => {
     try {
-      // Robust loader: prefer CDN (jsDelivr), fall back to raw, and if the browser blocks execution due to
-      // MIME / nosniff headers, fetch the raw text and inject it as a Blob (type: text/javascript).
-      const loadScriptWithFallback = (list, cb) => {
-        if (!list || list.length === 0) { cb(new Error('No sources')); return; }
-        const src = list[0];
-        const s = document.createElement('script');
-        s.src = src;
-        s.onload = () => cb(null, src);
-        s.onerror = () => { s.remove(); if (list.length > 1) loadScriptWithFallback(list.slice(1), cb); else cb(new Error('All sources failed')); };
-        document.head.appendChild(s);
-      };
+      const s = document.createElement('script');
+      s.src = src;
+      s.async = false;
+      s.onload = () => resolve(src);
+      s.onerror = (e) => { s.remove(); reject(e); };
+      (document.head || document.documentElement).appendChild(s);
+    } catch (e) { reject(e); }
+  });
 
-      const fetchAndInject = async (url) => {
-        const res = await fetch(url, { cache: 'no-store' });
-        if (!res.ok) throw new Error('Fetch failed: ' + res.status);
-        const text = await res.text();
-        const blob = new Blob([text], { type: 'text/javascript' });
-        const blobUrl = URL.createObjectURL(blob);
-        return new Promise((resolve, reject) => {
-          const s = document.createElement('script');
-          s.src = blobUrl;
-          s.onload = () => { URL.revokeObjectURL(blobUrl); resolve(blobUrl); };
-          s.onerror = (e) => { URL.revokeObjectURL(blobUrl); reject(e); };
-          document.head.appendChild(s);
-        });
-      };
-
-      const overlayCDN = 'https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/shared/camp-overlay.js';
-      const overlayRaw = 'https://raw.githubusercontent.com/camp-plus/camp-xt/main/shared/camp-overlay.js';
-      const utilsCDN = 'https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/shared/camp-utils.js';
-      const utilsRaw = 'https://raw.githubusercontent.com/camp-plus/camp-xt/main/shared/camp-utils.js';
-
-      loadScriptWithFallback([overlayCDN, overlayRaw], async (err) => {
-        if (err) {
-          console.warn('Overlay <script> load failed, attempting fetch+inject:', err);
-          try { await fetchAndInject(overlayRaw); } catch (e) { console.warn('fetch+inject overlay failed', e); }
-        }
-
-        loadScriptWithFallback([utilsCDN, utilsRaw], async (err2) => {
-          if (err2) {
-            console.warn('Utils <script> load failed, attempting fetch+inject:', err2);
-            try { await fetchAndInject(utilsRaw); } catch (e2) { console.warn('fetch+inject utils failed', e2); }
-          }
-          setTimeout(init, 500);
-        });
-      });
-
-    } catch (e) { console.error('CAMP GitHub load error', e); }
+  const loadScriptWithFallback = async (sources = []) => {
+    if (!sources || sources.length === 0) throw new Error('No script sources');
+    let lastErr = null;
+    for (const src of sources) {
+      try {
+        await appendScript(src);
+        return src;
+      } catch (e) {
+        lastErr = e;
+        // try next
+      }
+    }
+    throw lastErr || new Error('All sources failed');
   };
 
-  const init = () => {
+  const fetchAndInject = async (url) => {
+    const res = await fetch(url, { cache: 'no-store' });
+    if (!res.ok) throw new Error('Fetch failed: ' + res.status);
+    const text = await res.text();
+    const blob = new Blob([text], { type: 'text/javascript' });
+    const blobUrl = URL.createObjectURL(blob);
     try {
+      await appendScript(blobUrl);
+      return blobUrl;
+    } finally {
+      // give browser a moment to execute then revoke
+      setTimeout(() => { try { URL.revokeObjectURL(blobUrl); } catch (e) {} }, 1000);
+    }
+  };
+
+  const ensureScripts = async () => {
+    try {
+      await loadScriptWithFallback([overlayCDN, overlayRaw]);
+    } catch (e) {
+      console.warn('[CAMP GitHub] overlay <script> failed, trying fetch+inject:', e);
+      try { await fetchAndInject(overlayRaw); } catch (e2) { console.warn('[CAMP GitHub] fetch+inject overlay failed', e2); }
+    }
+
+    try {
+      await loadScriptWithFallback([utilsCDN, utilsRaw]);
+    } catch (e) {
+      console.warn('[CAMP GitHub] utils <script> failed, trying fetch+inject:', e);
+      try { await fetchAndInject(utilsRaw); } catch (e2) { console.warn('[CAMP GitHub] fetch+inject utils failed', e2); }
+    }
+  };
+
+  const waitFor = async (predicate, timeoutMs = 3000, intervalMs = 200) => {
+    const start = Date.now();
+    while (Date.now() - start < timeoutMs) {
+      try { if (predicate()) return true; } catch (e) {}
+      await new Promise(r => setTimeout(r, intervalMs));
+    }
+    return false;
+  };
+
+  const init = async () => {
+    try {
+      await ensureScripts();
+
+      const ok = await waitFor(() => window.CAMPOverlay && typeof window.CAMPOverlay === 'function', 4000, 200);
+      if (!ok) {
+        console.warn('[CAMP GitHub] CAMPOverlay not ready, attempting fetch+inject overlay raw');
+        try { await fetchAndInject(overlayRaw); } catch (e) { console.warn('[CAMP GitHub] fetch+inject overlay failed', e); }
+        await new Promise(r => setTimeout(r, 250));
+      }
+
+      if (!window.CAMPOverlay || typeof window.CAMPOverlay !== 'function') {
+        console.error('[CAMP GitHub] CAMPOverlay not available; aborting init');
+        return;
+      }
+
+      // CAMPUtils may be loaded alongside overlay; it's okay if it's not immediately available for some utilities
       const camp = new window.CAMPOverlay('GitHub', '1.0.0');
 
       camp.addScript('PR Quick Actions', 'Approve or request changes for PRs', () => {
         try {
-          // Basic action: click first approve button if present
           const approve = document.querySelector('button[data-hovercard-type="user"][aria-label*="Approve"]') || document.querySelector('button.js-merge-branch-action');
           if (approve) { approve.click(); return true; }
           camp._showToast('No approve button found');
         } catch (e) { console.error('PR Quick Actions error', e); }
-      }, { category: 'reviews', icon: '✅', hotkey: 'Control+Shift+1' });
+      }, { category: 'reviews', icon: '\u2705', hotkey: 'Control+Shift+1' });
 
       camp.addScript('Copy Branch Name', 'Copy current branch name to clipboard', async () => {
         try {
           const el = document.querySelector('span.css-truncate-target') || document.querySelector('strong.branch-name');
           const branch = el ? el.textContent.trim() : window.location.pathname.split('/').pop();
-          const ok = await window.CAMPUtils.copyToClipboard(branch);
-          if (ok) camp._showToast('Branch copied to clipboard');
+          const ok2 = window.CAMPUtils && window.CAMPUtils.copyToClipboard ? await window.CAMPUtils.copyToClipboard(branch) : false;
+          if (ok2) camp._showToast('Branch copied to clipboard');
           else camp._showToast('Copy failed', { level: 'error' });
         } catch (e) { console.error('Copy Branch error', e); }
-      }, { category: 'productivity', icon: '📋', hotkey: 'Control+Shift+B' });
+      }, { category: 'productivity', icon: '\ud83d\udccb', hotkey: 'Control+Shift+B' });
 
       camp.addScript('Review Enhancer', 'Expand diffs and show file list toggles', () => {
         try {
           document.querySelectorAll('button.js-diff-load').forEach(b => b.click());
           camp._showToast('Expanded diffs');
         } catch (e) { console.error('Review Enhancer error', e); }
-      }, { category: 'ui', icon: '🔍' });
+      }, { category: 'ui', icon: '\ud83d\udd0d' });
 
-      // Show overlay shortly after load
       setTimeout(() => camp.show(), 1000);
     } catch (e) {
       console.error('CAMP GitHub init error', e);
     }
   };
 
-  // Smart timing: wait until DOM is interactive
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', load); else load();
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
