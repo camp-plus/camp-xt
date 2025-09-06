@@ -15,14 +15,13 @@ Features implemented:
 This file is intended to be loaded by userscripts to provide the overlay UI.
 */
 
-(function(){
-  // Avoid redeclaring CAMPOverlay when the script is injected multiple times (CDN + blob fallbacks).
-  if (window.CAMPOverlay && typeof window.CAMPOverlay === 'function') {
-    try { console.info('[CAMPOverlay] already defined on window, skipping re-initialization'); } catch (e) {}
-    return;
-  }
-
-  class CAMPOverlay {
+/* Guard and assign an anonymous class to window.CAMPOverlay.
+  Using a class expression assigned to a property avoids creating a top-level
+  lexical binding named `CAMPOverlay`, which can cause "redeclaration of let"
+  SyntaxErrors when the same file is injected multiple times into the page.
+*/
+if (!window.CAMPOverlay || typeof window.CAMPOverlay !== 'function') {
+  window.CAMPOverlay = class {
   constructor(siteName = 'Site', version = '1.0.0', options = {}) {
     this.siteName = siteName;
     this.version = version;
@@ -329,10 +328,10 @@ This file is intended to be loaded by userscripts to provide the overlay UI.
   showSettings() {
     this._showToast('Settings not implemented in-overlay. Edit config/team-settings.json', { duration: 3000 });
   }
-}
+  };
 
-  // Export for use in userscripts
-  window.CAMPOverlay = CAMPOverlay;
   // Expose a simple version marker to help userscripts detect readiness/source
   try { window.CAMPOverlay.__CAMP_VERSION = '1.0.0'; } catch (e) {}
-})();
+} else {
+  try { console.info('[CAMPOverlay] already defined on window, skipping re-initialization'); } catch (e) {}
+}
