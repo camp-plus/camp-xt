@@ -20,6 +20,7 @@
   const utilsCDN = 'https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/shared/camp-utils.js';
   const utilsRaw = 'https://raw.githubusercontent.com/camp-plus/camp-xt/main/shared/camp-utils.js';
 
+  // appendScript will inject into page so the loaded script executes in page context (not the userscript sandbox)
   const appendScript = (src) => new Promise((resolve, reject) => {
     try {
       const s = document.createElement('script');
@@ -27,6 +28,7 @@
       s.async = false;
       s.onload = () => resolve(src);
       s.onerror = (e) => { s.remove(); reject(e); };
+      // Use documentElement/head from the page
       (document.head || document.documentElement).appendChild(s);
     } catch (e) { reject(e); }
   });
@@ -61,6 +63,8 @@
     }
   };
 
+  const pageWindow = (typeof unsafeWindow !== 'undefined') ? unsafeWindow : window;
+
   const ensureScripts = async () => {
     try {
       await loadScriptWithFallback([overlayCDN, overlayRaw]);
@@ -90,20 +94,20 @@
     try {
       await ensureScripts();
 
-      const ok = await waitFor(() => window.CAMPOverlay && typeof window.CAMPOverlay === 'function', 4000, 200);
+  const ok = await waitFor(() => pageWindow.CAMPOverlay && typeof pageWindow.CAMPOverlay === 'function', 4000, 200);
       if (!ok) {
         console.warn('[CAMP GitHub] CAMPOverlay not ready, attempting fetch+inject overlay raw');
         try { await fetchAndInject(overlayRaw); } catch (e) { console.warn('[CAMP GitHub] fetch+inject overlay failed', e); }
         await new Promise(r => setTimeout(r, 250));
       }
 
-      if (!window.CAMPOverlay || typeof window.CAMPOverlay !== 'function') {
+      if (!pageWindow.CAMPOverlay || typeof pageWindow.CAMPOverlay !== 'function') {
         console.error('[CAMP GitHub] CAMPOverlay not available; aborting init');
         return;
       }
 
       // CAMPUtils may be loaded alongside overlay; it's okay if it's not immediately available for some utilities
-      const camp = new window.CAMPOverlay('GitHub', '1.0.0');
+      const camp = new pageWindow.CAMPOverlay('GitHub', '1.0.0');
 
       camp.addScript('PR Quick Actions', 'Approve or request changes for PRs', () => {
         try {
@@ -116,8 +120,8 @@
       camp.addScript('Copy Branch Name', 'Copy current branch name to clipboard', async () => {
         try {
           const el = document.querySelector('span.css-truncate-target') || document.querySelector('strong.branch-name');
-          const branch = el ? el.textContent.trim() : window.location.pathname.split('/').pop();
-          const ok2 = window.CAMPUtils && window.CAMPUtils.copyToClipboard ? await window.CAMPUtils.copyToClipboard(branch) : false;
+          const branch = el ? el.textContent.trim() : pageWindow.location.pathname.split('/').pop();
+          const ok2 = pageWindow.CAMPUtils && pageWindow.CAMPUtils.copyToClipboard ? await pageWindow.CAMPUtils.copyToClipboard(branch) : false;
           if (ok2) camp._showToast('Branch copied to clipboard');
           else camp._showToast('Copy failed', { level: 'error' });
         } catch (e) { console.error('Copy Branch error', e); }
