@@ -14,7 +14,7 @@
 
 (function () {
   'use strict';
-  const load = () => {
+  const load = async () => {
     try {
       // Robust loader: prefer CDN (jsDelivr), fall back to raw, and if the browser blocks execution due to
       // MIME / nosniff headers, fetch the raw text and inject it as a Blob (type: text/javascript).
@@ -43,25 +43,32 @@
         });
       };
 
-      const overlayCDN = 'https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/shared/camp-overlay.js';
-      const overlayRaw = 'https://raw.githubusercontent.com/camp-plus/camp-xt/main/shared/camp-overlay.js';
+      const loaderCDN = 'https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/shared/camp-loader.js';
+      const loaderRaw = 'https://raw.githubusercontent.com/camp-plus/camp-xt/main/shared/camp-loader.js';
       const utilsCDN = 'https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/shared/camp-utils.js';
       const utilsRaw = 'https://raw.githubusercontent.com/camp-plus/camp-xt/main/shared/camp-utils.js';
 
-      loadScriptWithFallback([overlayCDN, overlayRaw], async (err) => {
-        if (err) {
-          console.warn('Overlay <script> load failed, attempting fetch+inject:', err);
-          try { await fetchAndInject(overlayRaw); } catch (e) { console.warn('fetch+inject overlay failed', e); }
-        }
-
-        loadScriptWithFallback([utilsCDN, utilsRaw], async (err2) => {
-          if (err2) {
-            console.warn('Utils <script> load failed, attempting fetch+inject:', err2);
-            try { await fetchAndInject(utilsRaw); } catch (e2) { console.warn('fetch+inject utils failed', e2); }
-          }
-          setTimeout(init, 800);
+      try {
+        await new Promise((resolve, reject) => {
+          // reuse the small callback-style loader used earlier
+          loadScriptWithFallback([loaderCDN, loaderRaw], (err) => err ? reject(err) : resolve());
         });
-      });
+      } catch (e) {
+        console.warn('Gmail: camp-loader failed, attempting fetch+inject loader raw', e);
+        try { await fetchAndInject(loaderRaw); } catch (e2) { console.warn('Gmail: fetch+inject loader failed', e2); }
+      }
+
+      try {
+        await new Promise((resolve, reject) => {
+          loadScriptWithFallback([utilsCDN, utilsRaw], (err) => err ? reject(err) : resolve());
+        });
+      } catch (e) {
+        console.warn('Gmail: utils failed, attempting fetch+inject', e);
+        try { await fetchAndInject(utilsRaw); } catch (e2) { console.warn('Gmail: fetch+inject utils failed', e2); }
+      }
+
+      // Start init after a short delay to allow loader to set window.__CAMP_ready
+      setTimeout(init, 800);
 
     } catch (e) { console.error('CAMP Gmail load error', e); }
   };
