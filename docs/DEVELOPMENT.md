@@ -1,0 +1,51 @@
+# DEVELOPMENT - CAMP-XT
+
+Coding standards and contribution guide for CAMP-XT userscripts.
+
+Overview
+- Use modern ES6+ syntax. Keep modules self-contained and resilient to DOM changes.
+- All userscripts must include `@updateURL` and `@downloadURL` pointing to `https://raw.githubusercontent.com/camp-plus/camp-xt/main/`.
+- Use semantic versioning in the `@version` header.
+
+File structure
+- Place site scripts under `scripts/<site>/`.
+- Shared code goes under `shared/`.
+- Config files live in `config/`.
+
+Script template
+- Use this header and basic structure:
+
+```js
+// ==UserScript==
+// @name         CAMP-XT: [Site Name]
+// @namespace    camp-xt/[site]
+// @version      1.0.0
+// @description  CAMP tools for [Site Name]
+// @author       CAMP Team
+// @match        https://[site].com/*
+// @updateURL    https://raw.githubusercontent.com/camp-plus/camp-xt/main/scripts/[site]/script.user.js
+// @downloadURL  https://raw.githubusercontent.com/camp-plus/camp-xt/main/scripts/[site]/script.user.js
+// @run-at       document-start
+// @grant        GM_setValue
+// @grant        GM_getValue
+// ==/UserScript==
+```
+
+Overlay integration
+- Load `shared/camp-overlay.js` and `shared/camp-utils.js` dynamically if not present.
+- Instantiate `const camp = new CAMPOverlay('Site Name', '1.0.0');` and register tools via `camp.addScript(...);`.
+
+Error handling
+- Wrap DOM interaction in try/catch blocks.
+- Provide feedback via `camp._showToast()` and console logging.
+
+Analytics
+- Use `config/team-settings.json` to determine whether to enable console analytics.
+
+Testing
+- Test scripts on representative pages for each supported site.
+- Pay attention to dynamic content (single-page apps) and use mutation observers or waitFor utilities.
+
+Pull requests
+- Include changelog entry and bump `@version`.
+- Ensure `@updateURL`/`@downloadURL` unchanged and point to main branch raw URL.

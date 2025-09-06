@@ -1,0 +1,9 @@
+{
+  "enableAnalytics": true,
+  "autoDismissTimer": 20000,
+  "dismissWarning": 5000,
+  "overlayPosition": "top-right",
+  "globalHotkey": "Control+Shift+C",
+  "defaultUpdateCheckHours": 24,
+  "toastDuration": 3000
+}

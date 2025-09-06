@@ -1,0 +1,17 @@
+{
+  "github.com": {
+    "name": "GitHub",
+    "scriptsPath": "scripts/github.com/github-tools.user.js",
+    "match": "https://github.com/*"
+  },
+  "gmail.com": {
+    "name": "Gmail",
+    "scriptsPath": "scripts/gmail.com/gmail-tools.user.js",
+    "match": "https://mail.google.com/*"
+  },
+  "jira.atlassian.com": {
+    "name": "Jira",
+    "scriptsPath": "scripts/jira.atlassian.com/jira-tools.user.js",
+    "match": "https://jira.atlassian.com/*"
+  }
+}
