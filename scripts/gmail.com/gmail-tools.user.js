@@ -68,7 +68,21 @@
 
   const init = () => {
     try {
-      const camp = new window.CAMPOverlay('Gmail', '1.0.0');
+      // Use the page's window when available (unsafeWindow in userscript managers) so we
+      // instantiate the CAMPOverlay that was injected into the page context, not the
+      // sandboxed userscript window.
+      const pageWindow = (typeof unsafeWindow !== 'undefined') ? unsafeWindow : window;
+      const CampOverlayCtor = pageWindow && pageWindow.CAMPOverlay;
+
+      if (!CampOverlayCtor) {
+        // If the overlay isn't available yet on the page, retry shortly.
+        // This avoids "CAMPOverlay is not a constructor" when scripts are still loading.
+        console.warn('CAMPOverlay not found on pageWindow, retrying...');
+        setTimeout(init, 500);
+        return;
+      }
+
+      const camp = new CampOverlayCtor('Gmail', '1.0.0');
 
       camp.addScript('Insert Template', 'Insert a canned response into compose', async () => {
         try {

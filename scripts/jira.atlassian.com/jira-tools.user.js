@@ -68,7 +68,16 @@
 
   const init = () => {
     try {
-      const camp = new window.CAMPOverlay('Jira', '1.0.0');
+      const pageWindow = (typeof unsafeWindow !== 'undefined') ? unsafeWindow : window;
+      const CampOverlayCtor = pageWindow && pageWindow.CAMPOverlay;
+
+      if (!CampOverlayCtor) {
+        console.warn('CAMPOverlay not found on pageWindow, retrying...');
+        setTimeout(init, 500);
+        return;
+      }
+
+      const camp = new CampOverlayCtor('Jira', '1.0.0');
 
       camp.addScript('Quick Create', 'Open quick ticket creation dialog', () => {
         try {
