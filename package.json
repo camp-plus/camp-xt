@@ -1,0 +1,13 @@
+{
+  "name": "camp-xt",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "lint": "eslint '**/*.js' --max-warnings 0 || true",
+    "test": "node test/smoke.js"
+  },
+  "devDependencies": {
+    "eslint": "^8.50.0",
+    "jsdom": "^22.1.0"
+  }
+}
