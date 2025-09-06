@@ -8,16 +8,16 @@ Emoji: 🏕️ CAMP Extensions
 > Install via ViolentMonkey using the raw file URLs below (camp-plus organization, main branch).
 
 - GitHub userscript
-  - https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/scripts/github.com/github-tools.user.js
+  - https://raw.githubusercontent.com/camp-plus/camp-xt/main/scripts/github.com/github-tools.user.js
 - Gmail userscript
-  - https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/scripts/gmail.com/gmail-tools.user.js
+  - https://raw.githubusercontent.com/camp-plus/camp-xt/main/scripts/gmail.com/gmail-tools.user.js
 - Jira userscript
-  - https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/scripts/jira.atlassian.com/jira-tools.user.js
+  - https://raw.githubusercontent.com/camp-plus/camp-xt/main/scripts/jira.atlassian.com/jira-tools.user.js
 
 ## Discovery bookmarklet
 Copy-paste the following into a bookmark's URL field. Clicking it will open the CAMP Overlay Loader for the current site (if supported):
 
-javascript:(function(){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/installation/bookmarklet.js';document.body.appendChild(s);})();
+javascript:(function(){var s=document.createElement('script');s.src='https://raw.githubusercontent.com/camp-plus/camp-xt/main/installation/bookmarklet.js';document.body.appendChild(s);})();
 
 ## Feature highlights
 - Unified CAMP overlay that appears on supported sites with a smooth slide-in animation

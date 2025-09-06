@@ -5,8 +5,8 @@
 // @description  CAMP tools for GitHub
 // @author       CAMP Team
 // @match        https://github.com/*
-// @updateURL    https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/scripts/github.com/github-tools.user.js
-// @downloadURL  https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/scripts/github.com/github-tools.user.js
+// @updateURL    https://raw.githubusercontent.com/camp-plus/camp-xt/main/scripts/github.com/github-tools.user.js
+// @downloadURL  https://raw.githubusercontent.com/camp-plus/camp-xt/main/scripts/github.com/github-tools.user.js
 // @run-at       document-start
 // @grant        GM_setValue
 // @grant        GM_getValue
@@ -14,20 +14,51 @@
 
 (function () {
   'use strict';
-  // Load shared overlay and utils
+  // Load shared overlay and utils with fallback sources
   const load = () => {
     try {
-      if (!window.CAMPOverlay) {
+      const loadScriptWithFallback = (list, cb) => {
+        if (!list || list.length === 0) { cb(new Error('No sources')); return; }
+        const src = list[0];
         const s = document.createElement('script');
-        s.src = 'https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/shared/camp-overlay.js';
+        s.src = src;
+        s.onload = () => cb(null, src);
+        s.onerror = () => {
+          // Remove the failed script element
+          s.remove();
+          if (list.length > 1) loadScriptWithFallback(list.slice(1), cb); else cb(new Error('All sources failed'));
+        };
         document.head.appendChild(s);
-      }
-      if (!window.CAMPUtils) {
-        const s2 = document.createElement('script');
-        s2.src = 'https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/shared/camp-utils.js';
-        document.head.appendChild(s2);
-      }
-      setTimeout(init, 500);
+      };
+
+      // overlay first
+      if (!window.CAMPOverlay) {
+        loadScriptWithFallback([
+          'https://raw.githubusercontent.com/camp-plus/camp-xt/main/shared/camp-overlay.js',
+          'https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/shared/camp-overlay.js'
+        ], (err) => {
+          if (err) console.warn('Failed to load camp-overlay:', err);
+          // then utils
+          if (!window.CAMPUtils) {
+            loadScriptWithFallback([
+              'https://raw.githubusercontent.com/camp-plus/camp-xt/main/shared/camp-utils.js',
+              'https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/shared/camp-utils.js'
+            ], (err2) => {
+              if (err2) console.warn('Failed to load camp-utils:', err2);
+              setTimeout(init, 500);
+            });
+          } else setTimeout(init, 500);
+        });
+      } else if (!window.CAMPUtils) {
+        loadScriptWithFallback([
+          'https://raw.githubusercontent.com/camp-plus/camp-xt/main/shared/camp-utils.js',
+          'https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/shared/camp-utils.js'
+        ], (err2) => {
+          if (err2) console.warn('Failed to load camp-utils:', err2);
+          setTimeout(init, 500);
+        });
+      } else setTimeout(init, 500);
+
     } catch (e) { console.error('CAMP GitHub load error', e); }
   };
 

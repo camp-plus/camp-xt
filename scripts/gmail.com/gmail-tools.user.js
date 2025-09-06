@@ -5,8 +5,8 @@
 // @description  CAMP tools for Gmail
 // @author       CAMP Team
 // @match        https://mail.google.com/*
-// @updateURL    https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/scripts/gmail.com/gmail-tools.user.js
-// @downloadURL  https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/scripts/gmail.com/gmail-tools.user.js
+// @updateURL    https://raw.githubusercontent.com/camp-plus/camp-xt/main/scripts/gmail.com/gmail-tools.user.js
+// @downloadURL  https://raw.githubusercontent.com/camp-plus/camp-xt/main/scripts/gmail.com/gmail-tools.user.js
 // @run-at       document-start
 // @grant        GM_setValue
 // @grant        GM_getValue
@@ -16,17 +16,42 @@
   'use strict';
   const load = () => {
     try {
-      if (!window.CAMPOverlay) {
+      const loadScriptWithFallback = (list, cb) => {
+        if (!list || list.length === 0) { cb(new Error('No sources')); return; }
+        const src = list[0];
         const s = document.createElement('script');
-        s.src = 'https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/shared/camp-overlay.js';
+        s.src = src;
+        s.onload = () => cb(null, src);
+        s.onerror = () => { s.remove(); if (list.length > 1) loadScriptWithFallback(list.slice(1), cb); else cb(new Error('All sources failed')); };
         document.head.appendChild(s);
-      }
-      if (!window.CAMPUtils) {
-        const s2 = document.createElement('script');
-        s2.src = 'https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/shared/camp-utils.js';
-        document.head.appendChild(s2);
-      }
-      setTimeout(init, 800);
+      };
+
+      if (!window.CAMPOverlay) {
+        loadScriptWithFallback([
+          'https://raw.githubusercontent.com/camp-plus/camp-xt/main/shared/camp-overlay.js',
+          'https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/shared/camp-overlay.js'
+        ], (err) => {
+          if (err) console.warn('Failed to load camp-overlay:', err);
+          if (!window.CAMPUtils) {
+            loadScriptWithFallback([
+              'https://raw.githubusercontent.com/camp-plus/camp-xt/main/shared/camp-utils.js',
+              'https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/shared/camp-utils.js'
+            ], (err2) => {
+              if (err2) console.warn('Failed to load camp-utils:', err2);
+              setTimeout(init, 800);
+            });
+          } else setTimeout(init, 800);
+        });
+      } else if (!window.CAMPUtils) {
+        loadScriptWithFallback([
+          'https://raw.githubusercontent.com/camp-plus/camp-xt/main/shared/camp-utils.js',
+          'https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/shared/camp-utils.js'
+        ], (err2) => {
+          if (err2) console.warn('Failed to load camp-utils:', err2);
+          setTimeout(init, 800);
+        });
+      } else setTimeout(init, 800);
+
     } catch (e) { console.error('CAMP Gmail load error', e); }
   };
 

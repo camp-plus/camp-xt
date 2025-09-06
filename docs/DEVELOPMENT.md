@@ -23,8 +23,10 @@ Script template
 // @description  CAMP tools for [Site Name]
 // @author       CAMP Team
 // @match        https://[site].com/*
-// @updateURL    https://raw.githubusercontent.com/camp-plus/camp-xt/main/scripts/[site]/script.user.js
-// @downloadURL  https://raw.githubusercontent.com/camp-plus/camp-xt/main/scripts/[site]/script.user.js
+// @updateURL    https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/scripts/[site]/script.user.js
+// @downloadURL  https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/scripts/[site]/script.user.js
+
+// NOTE: For predictable auto-updates, pin the CDN path to a tag or commit SHA instead of `@main`, e.g. `@v1.0.0` or `@<commit-sha>`.
 // @run-at       document-start
 // @grant        GM_setValue
 // @grant        GM_getValue

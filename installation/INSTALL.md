@@ -9,10 +9,12 @@ Prerequisites
 One-click install
 - Open ViolentMonkey dashboard and choose "Create new script" then paste the contents from the raw URL below and save.
 
-Raw URLs (team repository, main branch):
-- https://raw.githubusercontent.com/camp-plus/camp-xt/main/scripts/github.com/github-tools.user.js
-- https://raw.githubusercontent.com/camp-plus/camp-xt/main/scripts/gmail.com/gmail-tools.user.js
-- https://raw.githubusercontent.com/camp-plus/camp-xt/main/scripts/jira.atlassian.com/jira-tools.user.js
+CDN URLs (jsDelivr, recommended):
+- https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/scripts/github.com/github-tools.user.js
+- https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/scripts/gmail.com/gmail-tools.user.js
+- https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/scripts/jira.atlassian.com/jira-tools.user.js
+
+Note: For stability you can pin to a tag or commit SHA instead of `@main`, e.g. `@v1.0.0` or `@<commit-sha>`.
 
 Manual install
 1. In ViolentMonkey, click the + (Add) button.
