@@ -94,15 +94,33 @@
     try {
       await ensureScripts();
 
-  const ok = await waitFor(() => pageWindow.CAMPOverlay && typeof pageWindow.CAMPOverlay === 'function', 4000, 200);
+      const ok = await waitFor(() => pageWindow.CAMPOverlay && typeof pageWindow.CAMPOverlay === 'function', 4000, 200);
       if (!ok) {
         console.warn('[CAMP GitHub] CAMPOverlay not ready, attempting fetch+inject overlay raw');
         try { await fetchAndInject(overlayRaw); } catch (e) { console.warn('[CAMP GitHub] fetch+inject overlay failed', e); }
         await new Promise(r => setTimeout(r, 250));
       }
 
-      if (!pageWindow.CAMPOverlay || typeof pageWindow.CAMPOverlay !== 'function') {
+      // Defensive handling: sometimes a non-function value may be present on window (string/object),
+      // which leads to `is not a constructor` errors when instantiating. Detect and try to recover.
+      if (!pageWindow.CAMPOverlay) {
         console.error('[CAMP GitHub] CAMPOverlay not available; aborting init');
+        return;
+      }
+
+      if (typeof pageWindow.CAMPOverlay !== 'function') {
+        console.warn('[CAMP GitHub] CAMPOverlay present but not a constructor; typeof=', typeof pageWindow.CAMPOverlay, pageWindow.CAMPOverlay);
+        // Try reloading the overlay script into the page to replace the value with the proper constructor
+        try {
+          await fetchAndInject(overlayRaw);
+        } catch (e) {
+          console.warn('[CAMP GitHub] fetch+inject overlay retry failed', e);
+        }
+        await new Promise(r => setTimeout(r, 250));
+      }
+
+      if (!pageWindow.CAMPOverlay || typeof pageWindow.CAMPOverlay !== 'function') {
+        console.error('[CAMP GitHub] CAMPOverlay not available or invalid after retry; aborting init');
         return;
       }
 
