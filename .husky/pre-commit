@@ -1,0 +1,8 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# Run the pre-commit bump to increment patch version and stage changes
+node ./scripts/precommit-bump.js
+
+# Run lint and prevent commit on lint errors
+npm run lint
