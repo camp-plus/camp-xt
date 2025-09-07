@@ -24,6 +24,11 @@ const path = require('path');
   try { global.localStorage = window.localStorage; } catch (e) { /* ignore */ }
 
     // inject utils and overlay into the JSDOM window
+  // Ensure bare `localStorage` identifier exists in the script global scope for in-page scripts
+  const elAlias = dom.window.document.createElement('script');
+  elAlias.textContent = 'var localStorage = window.localStorage;';
+  dom.window.document.head.appendChild(elAlias);
+
     const elUtils = dom.window.document.createElement('script');
     elUtils.textContent = utilsSrc;
     dom.window.document.head.appendChild(elUtils);
