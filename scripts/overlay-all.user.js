@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         CAMP-XT: All-in-One Installer
 // @namespace    camp-xt/installer-all
-// @version      1.0.2
+// @version      1.0.3
 // @description  Single userscript that installs the CAMP overlay (page context) and registers GitHub, Gmail, and Jira handlers. Install this first.
 // @author       CAMP Team
 // @match        https://github.com/*
@@ -20,7 +20,7 @@
   if (!window.CAMPOverlay || typeof window.CAMPOverlay !== 'function') {
     // Minimal inline overlay class (trimmed version of shared overlay)
     window.CAMPOverlay = class {
-  constructor(siteName = 'Site', version = '1.0.2', options = {}) {
+  constructor(siteName = 'Site', version = '1.0.3', options = {}) {
         this.siteName = siteName; this.version = version; this.scripts = []; this.categories = {};
         this.settings = Object.assign({enableAnalytics:true,autoDismissTimer:20000,dismissWarning:5000,overlayPosition:'top-right',globalHotkey:'Control+Shift+C',toastDuration:3000}, options);
         this._init();
@@ -54,7 +54,7 @@
       showSettings(){ this._showToast('Settings not implemented in-overlay. Edit config/team-settings.json',{duration:3000}); }
     };
 
-  try { window.CAMPOverlay.__CAMP_VERSION = '1.0.2'; } catch (e) { void e; }
+  try { window.CAMPOverlay.__CAMP_VERSION = '1.0.3'; } catch (e) { void e; }
   try { window.__CAMP_ready = Promise.resolve(window.CAMPOverlay); } catch (e) { void e; }
   }
 
@@ -65,7 +65,7 @@
       await window.__CAMP_ready;
       // ensure single instance
       if(!window.__CAMP_instance){
-  window.__CAMP_instance = new window.CAMPOverlay(location.hostname, '1.0.2');
+  window.__CAMP_instance = new window.CAMPOverlay(location.hostname, '1.0.3');
       }
       const camp = window.__CAMP_instance;
 

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         CAMP-XT: Overlay Installer
 // @namespace    camp-xt/installer
-// @version      1.0.2
+// @version      1.0.3
 // @description  Installs the CAMP overlay into the page context (run-at document-start) — install this first.
 // @author       CAMP Team
 // @match        https://github.com/*
@@ -26,7 +26,7 @@
 
     // Define the overlay as a class expression assigned to window to avoid lexical redeclaration.
     window.CAMPOverlay = class {
-  constructor(siteName = 'Site', version = '1.0.2', options = {}) {
+  constructor(siteName = 'Site', version = '1.0.3', options = {}) {
         this.siteName = siteName;
         this.version = version;
         this.scripts = [];
@@ -336,7 +336,7 @@
     };
 
     // Expose a simple version marker and readiness promise
-  try { window.CAMPOverlay.__CAMP_VERSION = '1.0.2'; } catch (e) { void e; }
+  try { window.CAMPOverlay.__CAMP_VERSION = '1.0.3'; } catch (e) { void e; }
     try { window.__CAMP_ready = Promise.resolve(window.CAMPOverlay); } catch (e) { void e; }
 
   } catch (e) {

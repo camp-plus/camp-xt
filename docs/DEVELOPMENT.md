@@ -19,7 +19,7 @@ Script template
 // ==UserScript==
 // @name         CAMP-XT: [Site Name]
 // @namespace    camp-xt/[site]
-// @version      1.0.2
+// @version      1.0.3
 // @description  CAMP tools for [Site Name]
 // @author       CAMP Team
 // @match        https://[site].com/*

@@ -1,8 +1,8 @@
 #!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
+# Husky v9 note: avoid sourcing helper; the two lines above are deprecated in v10.
 
 # Run the pre-commit bump to increment patch version and stage changes
-node ./scripts/precommit-bump.js
+node ./scripts/precommit-bump.js || exit 1
 
 # Run lint and prevent commit on lint errors
-npm run lint
+npm run lint || exit 1
