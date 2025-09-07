@@ -44,29 +44,32 @@
   // Start injection and publish a promise on window so others can await it.
   window.__CAMP_injecting = (async () => {
     try {
-      // Try CDN script tag first
+      // Prefer fetching the raw file with a cache-busting query param to avoid CDN caches
+      const rawWithBust = overlayRaw + '?_=' + Date.now();
       try {
-        await appendScript(overlayCDN);
+        await fetchAndInject(rawWithBust);
       } catch (e) {
-        // CDN failed, try raw via normal script tag
-        try { await appendScript(overlayRaw); }
-        catch (e2) {
-          // If that fails due to nosniff, try fetch+inject
-          try { await fetchAndInject(overlayRaw); }
-          catch (e3) { throw e3; }
+        // If raw fetch+inject fails, try CDN script tag (fast, cached)
+        try {
+          await appendScript(overlayCDN);
+        } catch (e2) {
+          // If CDN tag fails, try raw script tag without cache-bust
+          try { await appendScript(overlayRaw); }
+          catch (e3) {
+            // Last resort: straight fetch+inject without cache-bust
+            try { await fetchAndInject(overlayRaw); }
+            catch (e4) { throw e4; }
+          }
         }
       }
 
-      // At this point overlay script should have executed and set window.CAMPOverlay
       if (window.CAMPOverlay && typeof window.CAMPOverlay === 'function') {
         window.__CAMP_ready = Promise.resolve(window.CAMPOverlay);
         return window.CAMPOverlay;
       }
 
-      // If still not defined, throw to let waiters know
       throw new Error('CAMPOverlay not defined after injection');
     } catch (err) {
-      // Ensure __CAMP_ready is a rejected promise
       window.__CAMP_ready = Promise.reject(err);
       throw err;
     } finally {
