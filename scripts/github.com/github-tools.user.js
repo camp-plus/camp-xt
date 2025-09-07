@@ -65,18 +65,28 @@
 
   const ensureScripts = async () => {
     try {
+      // Try fresh fetch+inject of loader first (cache-busted). If that fails, fall back to CDN/script tag, then try raw fallback.
       try {
-        await loadScriptWithFallback([loaderCDN, loaderRaw]);
+        await fetchAndInject(loaderRaw + '?_=' + Date.now());
       } catch (e) {
-        console.warn('[CAMP GitHub] camp-loader failed, attempting fetch+inject loader raw', e); void e;
-        try { await fetchAndInject(loaderRaw); } catch (e2) { console.warn('[CAMP GitHub] fetch+inject loader failed', e2); void e2; }
+        try {
+          await loadScriptWithFallback([loaderCDN, loaderRaw]);
+        } catch (e2) {
+          console.warn('[CAMP GitHub] camp-loader CDN/script failed, attempting fetch+inject loader raw', e2); void e2;
+          try { await fetchAndInject(loaderRaw); } catch (e3) { console.warn('[CAMP GitHub] fetch+inject loader failed', e3); void e3; }
+        }
       }
 
+      // Then ensure utils: prefer fresh fetch+inject, fall back to CDN/script tag and raw fetch fallback.
       try {
-        await loadScriptWithFallback([utilsCDN, utilsRaw]);
+        await fetchAndInject(utilsRaw + '?_=' + Date.now());
       } catch (e) {
-        console.warn('[CAMP GitHub] utils <script> failed, trying fetch+inject:', e); void e;
-        try { await fetchAndInject(utilsRaw); } catch (e2) { console.warn('[CAMP GitHub] fetch+inject utils failed', e2); void e2; }
+        try {
+          await loadScriptWithFallback([utilsCDN, utilsRaw]);
+        } catch (e2) {
+          console.warn('[CAMP GitHub] utils CDN/script failed, attempting fetch+inject utils raw', e2); void e2;
+          try { await fetchAndInject(utilsRaw); } catch (e3) { console.warn('[CAMP GitHub] fetch+inject utils failed', e3); void e3; }
+        }
       }
     } catch (e) {
       console.error('[CAMP GitHub] ensureScripts error', e); void e;
