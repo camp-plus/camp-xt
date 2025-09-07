@@ -1,7 +1,7 @@
 /*
 CAMPOverlay - Shared overlay system for CAMP-XT userscripts
 Author: CAMP Team
-Version: 1.0.8
+Version: 1.0.9
 
 Features implemented:
 - Unified interface (top-right) with slide-in animation
@@ -22,7 +22,7 @@ This file is intended to be loaded by userscripts to provide the overlay UI.
 */
 if (!window.CAMPOverlay || typeof window.CAMPOverlay !== 'function') {
   window.CAMPOverlay = class {
-  constructor(siteName = 'Site', version = '1.0.8', options = {}) {
+  constructor(siteName = 'Site', version = '1.0.9', options = {}) {
     this.siteName = siteName;
     this.version = version;
     this.scripts = [];
@@ -94,15 +94,30 @@ if (!window.CAMPOverlay || typeof window.CAMPOverlay !== 'function') {
   }
 
   _createContainer() {
+    // If already created, nothing to do
     if (document.getElementById('camp-overlay-root')) return;
+    // Ensure document.body exists; if not, wait until DOM is ready
+    if (!document.body) {
+      const onReady = () => {
+        try { this._createContainer(); } catch (e) { /* no-op */ }
+      };
+      // Use DOMContentLoaded or fallback to a microtask
+      try {
+        document.addEventListener('DOMContentLoaded', onReady, { once: true });
+      } catch (e) {
+        // Fallback in exotic environments
+        setTimeout(onReady, 0);
+      }
+      return;
+    }
     const root = document.createElement('div');
     root.id = 'camp-overlay-root';
     root.innerHTML = this._getHTML();
     document.body.appendChild(root);
     this.root = root;
-  try { this.root.classList.add(this.settings.overlayPosition); } catch (e) { /* no-op */ }
+    try { this.root.classList.add(this.settings.overlayPosition); } catch (e) { /* no-op */ }
     this._attachEventHandlers();
-  try { this._renderTools(); } catch (e) { /* no-op */ }
+    try { this._renderTools(); } catch (e) { /* no-op */ }
   }
 
   _getHTML() {
@@ -282,8 +297,13 @@ if (!window.CAMPOverlay || typeof window.CAMPOverlay !== 'function') {
 
   show() {
     try {
-      const root = document.getElementById('camp-overlay-root');
-      if (!root) this._createContainer();
+      let root = document.getElementById('camp-overlay-root') || this.root;
+      if (!root) {
+        this._createContainer();
+        // Re-fetch after creation
+        root = document.getElementById('camp-overlay-root') || this.root;
+      }
+      if (!root) return; // Could still be waiting for DOM ready
       root.classList.add('show');
       this._setupAutoDismiss();
     } catch (e) {
@@ -332,7 +352,7 @@ if (!window.CAMPOverlay || typeof window.CAMPOverlay !== 'function') {
   };
 
   // Expose a simple version marker to help userscripts detect readiness/source
-  try { window.CAMPOverlay.__CAMP_VERSION = '1.0.8'; } catch (e) { void e; }
+  try { window.CAMPOverlay.__CAMP_VERSION = '1.0.9'; } catch (e) { void e; }
 
   // Provide a readiness primitive so userscripts can `await window.__CAMP_ready` instead of polling.
   try { window.__CAMP_ready = Promise.resolve(window.CAMPOverlay); } catch (e) { void e; }
