@@ -7,7 +7,7 @@ const path = require('path');
     const overlaySrc = fs.readFileSync(path.join(__dirname, '..', 'shared', 'camp-overlay.js'), 'utf8');
     const utilsSrc = fs.readFileSync(path.join(__dirname, '..', 'shared', 'camp-utils.js'), 'utf8');
 
-    const dom = new JSDOM(`<!doctype html><html><head></head><body></body></html>`, { runScripts: 'dangerously', resources: 'usable' });
+  const dom = new JSDOM(`<!doctype html><html><head></head><body></body></html>`, { runScripts: 'dangerously', resources: 'usable', url: 'http://localhost' });
     const { window } = dom;
 
     // Provide a tiny localStorage shim for JSDOM so overlay load/save logic runs without noisy ReferenceErrors.
