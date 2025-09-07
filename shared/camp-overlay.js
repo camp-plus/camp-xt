@@ -1,7 +1,7 @@
 /*
 CAMPOverlay - Shared overlay system for CAMP-XT userscripts
 Author: CAMP Team
-Version: 1.0.7
+Version: 1.0.8
 
 Features implemented:
 - Unified interface (top-right) with slide-in animation
@@ -22,7 +22,7 @@ This file is intended to be loaded by userscripts to provide the overlay UI.
 */
 if (!window.CAMPOverlay || typeof window.CAMPOverlay !== 'function') {
   window.CAMPOverlay = class {
-  constructor(siteName = 'Site', version = '1.0.7', options = {}) {
+  constructor(siteName = 'Site', version = '1.0.8', options = {}) {
     this.siteName = siteName;
     this.version = version;
     this.scripts = [];
@@ -48,7 +48,7 @@ if (!window.CAMPOverlay || typeof window.CAMPOverlay !== 'function') {
       console.error('[CAMPOverlay] Init error', e);
     }
   }
-
+  
   _loadState() {
     try {
       const key = `camp-overlay:${this.siteName}:settings`;
@@ -100,8 +100,9 @@ if (!window.CAMPOverlay || typeof window.CAMPOverlay !== 'function') {
     root.innerHTML = this._getHTML();
     document.body.appendChild(root);
     this.root = root;
+  try { this.root.classList.add(this.settings.overlayPosition); } catch (e) { /* no-op */ }
     this._attachEventHandlers();
-    this._setupAutoDismiss();
+  try { this._renderTools(); } catch (e) { /* no-op */ }
   }
 
   _getHTML() {
@@ -113,7 +114,7 @@ if (!window.CAMPOverlay || typeof window.CAMPOverlay !== 'function') {
       surface: '#2f004f'
     };
 
-    const styles = `
+  const styles = `
       #camp-overlay-root{position:fixed;z-index:999999;pointer-events:auto;font-family:Inter,Segoe UI,Roboto,Arial,sans-serif}
       #camp-overlay-root .camp-overlay{width:360px;max-width:calc(100vw - 32px);background:${palette.surface};color:${palette.light};border-radius:12px;padding:12px;box-shadow:0 8px 30px rgba(0,0,0,0.6);transform:translate3d(20px,-20px,0) scale(0.98);opacity:0;transition:transform 350ms cubic-bezier(.2,.9,.3,1),opacity 250ms ease}
       #camp-overlay-root.top-right{top:16px;right:16px}
@@ -331,7 +332,7 @@ if (!window.CAMPOverlay || typeof window.CAMPOverlay !== 'function') {
   };
 
   // Expose a simple version marker to help userscripts detect readiness/source
-  try { window.CAMPOverlay.__CAMP_VERSION = '1.0.7'; } catch (e) { void e; }
+  try { window.CAMPOverlay.__CAMP_VERSION = '1.0.8'; } catch (e) { void e; }
 
   // Provide a readiness primitive so userscripts can `await window.__CAMP_ready` instead of polling.
   try { window.__CAMP_ready = Promise.resolve(window.CAMPOverlay); } catch (e) { void e; }

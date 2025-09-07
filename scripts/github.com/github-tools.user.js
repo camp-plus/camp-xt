@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         CAMP-XT: GitHub
 // @namespace    camp-xt/github.com
-// @version      1.0.7
+// @version      1.0.8
 // @description  CAMP tools for GitHub
 // @author       CAMP Team
 // @match        https://github.com/*
@@ -124,7 +124,7 @@
         return;
       }
 
-  const camp = new pageWindow.CAMPOverlay('GitHub', '1.0.7');
+  const camp = new pageWindow.CAMPOverlay('GitHub', '1.0.8');
 
       camp.addScript('PR Quick Actions', 'Approve or request changes for PRs', () => {
         try {

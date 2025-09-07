@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         CAMP-XT: Overlay Installer
 // @namespace    camp-xt/installer
-// @version      1.0.7
+// @version      1.0.8
 // @description  Installs the CAMP overlay into the page context (run-at document-start) — install this first.
 // @author       CAMP Team
 // @match        https://github.com/*

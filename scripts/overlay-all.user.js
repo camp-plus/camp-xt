@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         CAMP-XT: All-in-One Installer
 // @namespace    camp-xt/installer-all
-// @version      1.0.7
+// @version      1.0.8
 // @description  Single userscript that installs the CAMP overlay (page context) and registers GitHub, Gmail, and Jira handlers. Install this first.
 // @author       CAMP Team
 // @match        https://github.com/*
@@ -38,7 +38,7 @@
       await w.__CAMP_ready;
       // ensure single instance
       if(!w.__CAMP_instance){
-        w.__CAMP_instance = new w.CAMPOverlay(location.hostname, '1.0.7');
+        w.__CAMP_instance = new w.CAMPOverlay(location.hostname, '1.0.8');
       }
       const camp = w.__CAMP_instance;
 
