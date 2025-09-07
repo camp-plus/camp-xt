@@ -14,6 +14,19 @@ Emoji: 🏕️ CAMP Extensions
 - Jira userscript
   - https://raw.githubusercontent.com/camp-plus/camp-xt/main/scripts/jira.atlassian.com/jira-tools.user.js
 
+### Recommended: use the idempotent loader (raw URL)
+The project provides a small, idempotent loader script that ensures the overlay is injected exactly once and avoids redeclaration/race conditions across multiple userscripts.
+
+- Loader (raw URL)
+  - https://raw.githubusercontent.com/camp-plus/camp-xt/main/shared/camp-loader.js
+
+Installers/userscripts now prefer to load the loader and then await `window.__CAMP_ready` so the overlay is only instantiated once per page.
+
+Notes on caching and updates
+- If you need the very latest code from `main` during development, use the raw URL with a cache-busting query parameter (e.g. `?_=TIMESTAMP`) or install directly from this repository using the bookmarklet.
+- For stable team installs, pin to a tag or commit SHA (e.g. `@v1.2.3` or `@<commit-sha>` on jsDelivr) to avoid surprising updates.
+- The loader prefers fetching the raw file with a cache-bust first (to avoid stale CDN caches) and falls back to CDN/script tags when necessary.
+
 ## Discovery bookmarklet
 Copy-paste the following into a bookmark's URL field. Clicking it will open the CAMP Overlay Loader for the current site (if supported):
 
