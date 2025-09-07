@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         CAMP-XT: Overlay Installer
 // @namespace    camp-xt/installer
-// @version      1.0.5
+// @version      1.0.6
 // @description  Installs the CAMP overlay into the page context (run-at document-start) — install this first.
 // @author       CAMP Team
 // @match        https://github.com/*
@@ -9,7 +9,8 @@
 // @match        https://jira.atlassian.com/*
 // @run-at       document-start
 // @grant        none
-// @inject-into  page
+// @noframes
+// Note: Don't force page-context injection; let the manager choose (avoids CSP issues on some sites)
 // @require      https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/shared/camp-utils.js
 // @require      https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/shared/camp-overlay.js
 // @updateURL    https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/scripts/overlay-installer.user.js

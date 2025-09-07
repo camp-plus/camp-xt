@@ -1,7 +1,7 @@
 /*
 CAMPOverlay - Shared overlay system for CAMP-XT userscripts
 Author: CAMP Team
-Version: 1.0.5
+Version: 1.0.6
 
 Features implemented:
 - Unified interface (top-right) with slide-in animation
@@ -22,7 +22,7 @@ This file is intended to be loaded by userscripts to provide the overlay UI.
 */
 if (!window.CAMPOverlay || typeof window.CAMPOverlay !== 'function') {
   window.CAMPOverlay = class {
-  constructor(siteName = 'Site', version = '1.0.5', options = {}) {
+  constructor(siteName = 'Site', version = '1.0.6', options = {}) {
     this.siteName = siteName;
     this.version = version;
     this.scripts = [];
@@ -331,7 +331,7 @@ if (!window.CAMPOverlay || typeof window.CAMPOverlay !== 'function') {
   };
 
   // Expose a simple version marker to help userscripts detect readiness/source
-  try { window.CAMPOverlay.__CAMP_VERSION = '1.0.5'; } catch (e) { void e; }
+  try { window.CAMPOverlay.__CAMP_VERSION = '1.0.6'; } catch (e) { void e; }
 
   // Provide a readiness primitive so userscripts can `await window.__CAMP_ready` instead of polling.
   try { window.__CAMP_ready = Promise.resolve(window.CAMPOverlay); } catch (e) { void e; }
