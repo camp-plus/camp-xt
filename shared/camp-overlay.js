@@ -1,7 +1,7 @@
 /*
 CAMPOverlay - Shared overlay system for CAMP-XT userscripts
 Author: CAMP Team
-Version: 1.0.10
+Version: 1.0.11
 
 Features implemented:
 - Unified interface (top-right) with slide-in animation
@@ -22,7 +22,7 @@ This file is intended to be loaded by userscripts to provide the overlay UI.
 */
 if (!window.CAMPOverlay || typeof window.CAMPOverlay !== 'function') {
   window.CAMPOverlay = class {
-  constructor(siteName = 'Site', version = '1.0.10', options = {}) {
+  constructor(siteName = 'Site', version = '1.0.11', options = {}) {
     this.siteName = siteName;
     this.version = version;
     this.scripts = [];
@@ -143,6 +143,10 @@ if (!window.CAMPOverlay || typeof window.CAMPOverlay !== 'function') {
     try { this.root.classList.add(this.settings.overlayPosition); } catch (e) { /* no-op */ }
     this._attachEventHandlers();
     try { this._renderTools(); } catch (e) { /* no-op */ }
+    // If a show was requested before the container existed, fulfill it now
+    if (this._pendingShow) {
+      try { this.show(); } catch (e) { /* no-op */ } finally { this._pendingShow = false; }
+    }
   }
 
   _getHTML() {
@@ -324,11 +328,13 @@ if (!window.CAMPOverlay || typeof window.CAMPOverlay !== 'function') {
     try {
       let root = document.getElementById('camp-overlay-root') || this.root;
       if (!root) {
+        // If body isn't ready yet, remember the intent to show
+        if (!document.body) this._pendingShow = true;
         this._createContainer();
-        // Re-fetch after creation
+        // Re-fetch after creation (may still be null if waiting for DOM ready)
         root = document.getElementById('camp-overlay-root') || this.root;
       }
-      if (!root) return; // Could still be waiting for DOM ready
+      if (!root) { this._pendingShow = true; return; }
       root.classList.add('show');
       this._setupAutoDismiss();
     } catch (e) {
@@ -377,7 +383,7 @@ if (!window.CAMPOverlay || typeof window.CAMPOverlay !== 'function') {
   };
 
   // Expose a simple version marker to help userscripts detect readiness/source
-  try { window.CAMPOverlay.__CAMP_VERSION = '1.0.10'; } catch (e) { void e; }
+  try { window.CAMPOverlay.__CAMP_VERSION = '1.0.11'; } catch (e) { void e; }
 
   // Provide a readiness primitive so userscripts can `await window.__CAMP_ready` instead of polling.
   try { window.__CAMP_ready = Promise.resolve(window.CAMPOverlay); } catch (e) { void e; }
