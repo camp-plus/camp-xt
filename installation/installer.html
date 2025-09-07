@@ -12,12 +12,15 @@
     <p>
       <button id="install">Install via CDN (latest)</button>
       <button id="install-raw" style="margin-left:8px;background:#666">Install via Raw (no-cache)</button>
+      <button id="install-pinned" style="margin-left:8px;background:#2d9955">Install pinned to latest commit</button>
       <button id="view" style="margin-left:8px;background:#444">View source</button>
     </p>
     <pre id="log" style="display:none"></pre>
     <script>
-      const cdnUrl = 'https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/scripts/overlay-all.user.js';
-      const rawUrl = 'https://raw.githubusercontent.com/camp-plus/camp-xt/main/scripts/overlay-all.user.js';
+  const owner = 'camp-plus';
+  const repo = 'camp-xt';
+  const cdnUrl = `https://cdn.jsdelivr.net/gh/${owner}/${repo}@main/scripts/overlay-all.user.js`;
+  const rawUrl = `https://raw.githubusercontent.com/${owner}/${repo}/main/scripts/overlay-all.user.js`;
 
       document.getElementById('install').addEventListener('click', () => {
         window.open(cdnUrl + '?_=' + Date.now(), '_blank', 'noopener');
@@ -25,6 +28,29 @@
 
       document.getElementById('install-raw').addEventListener('click', () => {
         window.open(rawUrl + '?_=' + Date.now(), '_blank', 'noopener');
+      });
+
+      async function getLatestCommitSha() {
+        const api = `https://api.github.com/repos/${owner}/${repo}/commits/main`;
+        const res = await fetch(api, { cache: 'no-store' });
+        if (!res.ok) throw new Error('GitHub API error: ' + res.status);
+        const data = await res.json();
+        return data && (data.sha || (data.commit && data.commit.tree && data.commit.tree.sha));
+      }
+
+      document.getElementById('install-pinned').addEventListener('click', async () => {
+        const log = document.getElementById('log');
+        log.style.display = 'block';
+        log.textContent = 'Resolving latest commit...';
+        try {
+          const sha = await getLatestCommitSha();
+          if (!sha) throw new Error('No SHA found');
+          const pinned = `https://raw.githubusercontent.com/${owner}/${repo}/${sha}/scripts/overlay-all.user.js`;
+          log.textContent = 'Opening pinned script @ ' + sha.slice(0, 7) + '...';
+          window.open(pinned + '?_=' + Date.now(), '_blank', 'noopener');
+        } catch (e) {
+          log.textContent = 'Pinned install error: ' + (e && e.message ? e.message : String(e));
+        }
       });
 
       document.getElementById('view').addEventListener('click', async () => {
