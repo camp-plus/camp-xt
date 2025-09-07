@@ -1,7 +1,7 @@
 /*
 CAMPOverlay - Shared overlay system for CAMP-XT userscripts
 Author: CAMP Team
-Version: 1.0.9
+Version: 1.0.10
 
 Features implemented:
 - Unified interface (top-right) with slide-in animation
@@ -22,7 +22,7 @@ This file is intended to be loaded by userscripts to provide the overlay UI.
 */
 if (!window.CAMPOverlay || typeof window.CAMPOverlay !== 'function') {
   window.CAMPOverlay = class {
-  constructor(siteName = 'Site', version = '1.0.9', options = {}) {
+  constructor(siteName = 'Site', version = '1.0.10', options = {}) {
     this.siteName = siteName;
     this.version = version;
     this.scripts = [];
@@ -87,9 +87,34 @@ if (!window.CAMPOverlay || typeof window.CAMPOverlay !== 'function') {
       this.categories[entry.category].push(entry);
       if (entry.hotkey) this._registerHotkey(entry.hotkey, entry);
       if (this.settings.enableAnalytics) console.log(`[CAMPOverlay] Registered script: ${name} (category: ${entry.category})`);
+      try { this._renderTools(); } catch (e) { /* no-op */ }
       return entry;
     } catch (e) {
       console.error('[CAMPOverlay] addScript error', e);
+    }
+  }
+
+  _renderTools() {
+    try {
+      const root = this.root || document.getElementById('camp-overlay-root');
+      if (!root) return;
+      const categoriesEl = root.querySelector('.camp-categories');
+      if (!categoriesEl) return;
+      let html = '';
+      for (const cat of Object.keys(this.categories)) {
+        const items = this.categories[cat];
+        html += `<div class="camp-category"><h4>${cat}</h4>`;
+        for (const t of items) {
+          html += `<div class="camp-tool" id="${t.id}">
+            <div class="meta"><div class="icon">${t.icon}</div><div class="info"><div class="name">${t.name}</div><div class="desc" style="font-size:12px;color:rgba(255,255,255,0.65)">${t.description}</div></div></div>
+            <div class="controls"><button class="run">Run</button></div>
+          </div>`;
+        }
+        html += `</div>`;
+      }
+      categoriesEl.innerHTML = html;
+    } catch (e) {
+      console.error('[CAMPOverlay] _renderTools error', e);
     }
   }
 
@@ -130,7 +155,7 @@ if (!window.CAMPOverlay || typeof window.CAMPOverlay !== 'function') {
     };
 
   const styles = `
-      #camp-overlay-root{position:fixed;z-index:999999;pointer-events:auto;font-family:Inter,Segoe UI,Roboto,Arial,sans-serif}
+      #camp-overlay-root{position:fixed;z-index:2147483647;pointer-events:auto;font-family:Inter,Segoe UI,Roboto,Arial,sans-serif}
       #camp-overlay-root .camp-overlay{width:360px;max-width:calc(100vw - 32px);background:${palette.surface};color:${palette.light};border-radius:12px;padding:12px;box-shadow:0 8px 30px rgba(0,0,0,0.6);transform:translate3d(20px,-20px,0) scale(0.98);opacity:0;transition:transform 350ms cubic-bezier(.2,.9,.3,1),opacity 250ms ease}
       #camp-overlay-root.top-right{top:16px;right:16px}
       #camp-overlay-root.top-left{top:16px;left:16px}
@@ -352,7 +377,7 @@ if (!window.CAMPOverlay || typeof window.CAMPOverlay !== 'function') {
   };
 
   // Expose a simple version marker to help userscripts detect readiness/source
-  try { window.CAMPOverlay.__CAMP_VERSION = '1.0.9'; } catch (e) { void e; }
+  try { window.CAMPOverlay.__CAMP_VERSION = '1.0.10'; } catch (e) { void e; }
 
   // Provide a readiness primitive so userscripts can `await window.__CAMP_ready` instead of polling.
   try { window.__CAMP_ready = Promise.resolve(window.CAMPOverlay); } catch (e) { void e; }
