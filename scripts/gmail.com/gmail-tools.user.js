@@ -14,6 +14,8 @@
 
 (function () {
   'use strict';
+
+/* global unsafeWindow */
   const load = async () => {
     try {
       // Robust loader: prefer CDN (jsDelivr), fall back to raw, and if the browser blocks execution due to

@@ -333,8 +333,8 @@
     };
 
     // Expose a simple version marker and readiness promise
-    try { window.CAMPOverlay.__CAMP_VERSION = '1.0.0'; } catch (e) {}
-    try { window.__CAMP_ready = Promise.resolve(window.CAMPOverlay); } catch (e) {}
+    try { window.CAMPOverlay.__CAMP_VERSION = '1.0.0'; } catch (e) { void e; }
+    try { window.__CAMP_ready = Promise.resolve(window.CAMPOverlay); } catch (e) { void e; }
 
   } catch (e) {
     console.error('CAMP overlay installer error', e);

@@ -1,9 +1,8 @@
 (function () {
-  try {
-    // Loaders: prefer CDN (jsDelivr) which serves correct JS MIME types. If all <script src> attempts fail
-    // (for example because raw.githubusercontent serves text/plain and the browser blocks execution),
-    // fallback to fetching the raw content and injecting it via a Blob with the correct MIME.
-    const loadScriptWithFallback = (list, cb) => {
+  // Loaders: prefer CDN (jsDelivr) which serves correct JS MIME types. If all <script src> attempts fail
+  // (for example because raw.githubusercontent serves text/plain and the browser blocks execution),
+  // fallback to fetching the raw content and injecting it via a Blob with the correct MIME.
+  const loadScriptWithFallback = (list, cb) => {
       if (!list || list.length === 0) { cb(new Error('No sources')); return; }
       const src = list[0];
       const s = document.createElement('script');
@@ -18,22 +17,18 @@
     };
 
     const fetchAndInject = async (url) => {
-      try {
-        const res = await fetch(url, { cache: 'no-store' });
-        if (!res.ok) throw new Error('Fetch failed: ' + res.status);
-        const text = await res.text();
-        const blob = new Blob([text], { type: 'text/javascript' });
-        const blobUrl = URL.createObjectURL(blob);
-        return new Promise((resolve, reject) => {
-          const s = document.createElement('script');
-          s.src = blobUrl;
-          s.onload = () => { URL.revokeObjectURL(blobUrl); resolve(blobUrl); };
-          s.onerror = (e) => { URL.revokeObjectURL(blobUrl); reject(e); };
-          document.head.appendChild(s);
-        });
-      } catch (e) {
-        throw e;
-      }
+      const res = await fetch(url, { cache: 'no-store' });
+      if (!res.ok) throw new Error('Fetch failed: ' + res.status);
+      const text = await res.text();
+      const blob = new Blob([text], { type: 'text/javascript' });
+      const blobUrl = URL.createObjectURL(blob);
+      return new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = blobUrl;
+        s.onload = () => { URL.revokeObjectURL(blobUrl); resolve(blobUrl); };
+        s.onerror = (e) => { URL.revokeObjectURL(blobUrl); reject(e); };
+        document.head.appendChild(s);
+      });
     };
 
     // Prefer CDN first to avoid MIME issues with raw.githubusercontent
@@ -55,8 +50,7 @@
           try { await fetchAndInject(utilsRaw); } catch (e2) { console.warn('fetch+inject utils failed', e2); }
         }
 
-        setTimeout(() => { if (window.CAMPOverlay) { const c = new CAMPOverlay(location.hostname, '1.0.0'); c.show(); } }, 800);
+  setTimeout(() => { if (window.CAMPOverlay) { const c = new window.CAMPOverlay(location.hostname, '1.0.0'); c.show(); } }, 800);
       });
     });
-  } catch (e) { console.error('CAMP bookmarklet failed', e); }
 })();

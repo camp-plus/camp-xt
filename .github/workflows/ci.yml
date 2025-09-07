@@ -36,9 +36,9 @@ jobs:
       - name: Install & test
         run: |
           if [ -f package.json ]; then
-            npm ci
-            npm run -s lint || true
-            npm test || exit 1
+            npm ci --prefer-offline --no-audit
+            npm run -s lint
+            npm test
           else
             echo 'No package.json; skipping lint/test'
           fi

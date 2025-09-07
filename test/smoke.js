@@ -10,6 +10,16 @@ const path = require('path');
     const dom = new JSDOM(`<!doctype html><html><head></head><body></body></html>`, { runScripts: 'dangerously', resources: 'usable' });
     const { window } = dom;
 
+    // Provide a tiny localStorage shim for JSDOM so overlay load/save logic runs without noisy ReferenceErrors.
+    if (!window.localStorage) {
+      const store = {};
+      window.localStorage = {
+        getItem: (k) => (Object.prototype.hasOwnProperty.call(store, k) ? store[k] : null),
+        setItem: (k, v) => { store[k] = String(v); },
+        removeItem: (k) => { delete store[k]; },
+      };
+    }
+
     // inject utils and overlay into the JSDOM window
     const elUtils = dom.window.document.createElement('script');
     elUtils.textContent = utilsSrc;

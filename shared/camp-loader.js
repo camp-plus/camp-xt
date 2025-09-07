@@ -1,7 +1,6 @@
-(function(){
-  // Idempotent loader for CAMP overlay.
-  // Ensures only one fetch/injection of the full overlay occurs, even if multiple
-  // userscripts attempt to load it concurrently (CDN + raw + fetch+inject fallbacks).
+(function () {
+  // Idempotent loader for CAMP overlay. Exposes window.__CAMP_injecting while running
+  // and resolves window.__CAMP_ready once the overlay constructor is available.
   if (window.__CAMP_ready && window.__CAMP_ready.then) return;
   if (window.__CAMP_injecting && window.__CAMP_injecting.then) return;
 
@@ -12,16 +11,15 @@
     try {
       const existing = document.querySelector(`script[src="${src}"]`);
       if (existing) {
-        // If script tag already exists, resolve once it loads (or immediately if already loaded)
         if (existing.getAttribute('data-camp-loaded') === '1') return resolve(src);
-        existing.addEventListener('load', () => { existing.setAttribute('data-camp-loaded','1'); resolve(src); });
-        existing.addEventListener('error', (e) => reject(e));
+        existing.addEventListener('load', () => { existing.setAttribute('data-camp-loaded', '1'); resolve(src); });
+        existing.addEventListener('error', (e) => { reject(e); void e; });
         return;
       }
       const s = document.createElement('script');
       s.src = src;
       s.async = false;
-      s.onload = () => { s.setAttribute('data-camp-loaded','1'); resolve(src); };
+      s.onload = () => { s.setAttribute('data-camp-loaded', '1'); resolve(src); };
       s.onerror = (e) => { s.remove(); reject(e); };
       (document.head || document.documentElement).appendChild(s);
     } catch (e) { reject(e); }
@@ -37,44 +35,39 @@
       await appendScript(blobUrl);
       return blobUrl;
     } finally {
-      setTimeout(() => { try { URL.revokeObjectURL(blobUrl); } catch (e) {} }, 1500);
+      setTimeout(() => { try { URL.revokeObjectURL(blobUrl); } catch (e) { void e; } }, 1500);
     }
   };
 
   // Start injection and publish a promise on window so others can await it.
   window.__CAMP_injecting = (async () => {
+    // Prefer fetching the raw file with a cache-busting query param to avoid CDN caches
+    const rawWithBust = overlayRaw + '?_=' + Date.now();
     try {
-      // Prefer fetching the raw file with a cache-busting query param to avoid CDN caches
-      const rawWithBust = overlayRaw + '?_=' + Date.now();
+      await fetchAndInject(rawWithBust);
+    } catch (e) {
+      // If raw fetch+inject fails, try CDN script tag (fast, cached)
       try {
-        await fetchAndInject(rawWithBust);
-      } catch (e) {
-        // If raw fetch+inject fails, try CDN script tag (fast, cached)
+        await appendScript(overlayCDN);
+      } catch (e2) {
+        // If CDN tag fails, try raw script tag without cache-bust
         try {
-          await appendScript(overlayCDN);
-        } catch (e2) {
-          // If CDN tag fails, try raw script tag without cache-bust
-          try { await appendScript(overlayRaw); }
-          catch (e3) {
-            // Last resort: straight fetch+inject without cache-bust
-            try { await fetchAndInject(overlayRaw); }
-            catch (e4) { throw e4; }
-          }
+          await appendScript(overlayRaw);
+        } catch (e3) {
+          // Last resort: straight fetch+inject without cache-bust
+          await fetchAndInject(overlayRaw);
         }
       }
-
-      if (window.CAMPOverlay && typeof window.CAMPOverlay === 'function') {
-        window.__CAMP_ready = Promise.resolve(window.CAMPOverlay);
-        return window.CAMPOverlay;
-      }
-
-      throw new Error('CAMPOverlay not defined after injection');
-    } catch (err) {
-      window.__CAMP_ready = Promise.reject(err);
-      throw err;
-    } finally {
-      try { delete window.__CAMP_injecting; } catch (e) {}
     }
+
+    if (window.CAMPOverlay && typeof window.CAMPOverlay === 'function') {
+      window.__CAMP_ready = Promise.resolve(window.CAMPOverlay);
+      try { return window.CAMPOverlay; } finally { try { delete window.__CAMP_injecting; } catch (e) { void e; } }
+    }
+
+    const err = new Error('CAMPOverlay not defined after injection');
+    window.__CAMP_ready = Promise.reject(err);
+    try { throw err; } finally { try { delete window.__CAMP_injecting; } catch (e) { void e; } }
   })();
 
 })();
