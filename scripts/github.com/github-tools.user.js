@@ -5,8 +5,8 @@
 // @description  CAMP tools for GitHub
 // @author       CAMP Team
 // @match        https://github.com/*
-// @updateURL    https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/scripts/github.com/github-tools.user.js
-// @downloadURL  https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/scripts/github.com/github-tools.user.js
+// @updateURL    https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@157c87e9f39d2721dd50084e1841eb7b7ac61107/scripts/github.com/github-tools.user.js
+// @downloadURL  https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@157c87e9f39d2721dd50084e1841eb7b7ac61107/scripts/github.com/github-tools.user.js
 // @run-at       document-start
 // @grant        GM_setValue
 // @grant        GM_getValue
@@ -17,10 +17,10 @@
 (function () {
   'use strict';
 
-  const loaderCDN = 'https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/shared/camp-loader.js';
-  const loaderRaw = 'https://raw.githubusercontent.com/camp-plus/camp-xt/main/shared/camp-loader.js';
-  const utilsCDN = 'https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/shared/camp-utils.js';
-  const utilsRaw = 'https://raw.githubusercontent.com/camp-plus/camp-xt/main/shared/camp-utils.js';
+  const loaderCDN = 'https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@157c87e9f39d2721dd50084e1841eb7b7ac61107/shared/camp-loader.js';
+  const loaderRaw = 'https://raw.githubusercontent.com/camp-plus/camp-xt/157c87e9f39d2721dd50084e1841eb7b7ac61107/shared/camp-loader.js';
+  const utilsCDN = 'https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@157c87e9f39d2721dd50084e1841eb7b7ac61107/shared/camp-utils.js';
+  const utilsRaw = 'https://raw.githubusercontent.com/camp-plus/camp-xt/157c87e9f39d2721dd50084e1841eb7b7ac61107/shared/camp-utils.js';
 
   const appendScript = (src) => new Promise((resolve, reject) => {
     try {

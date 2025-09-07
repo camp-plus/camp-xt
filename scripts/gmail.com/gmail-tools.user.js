@@ -5,8 +5,8 @@
 // @description  CAMP tools for Gmail
 // @author       CAMP Team
 // @match        https://mail.google.com/*
-// @updateURL    https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/scripts/gmail.com/gmail-tools.user.js
-// @downloadURL  https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/scripts/gmail.com/gmail-tools.user.js
+// @updateURL    https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@157c87e9f39d2721dd50084e1841eb7b7ac61107/scripts/gmail.com/gmail-tools.user.js
+// @downloadURL  https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@157c87e9f39d2721dd50084e1841eb7b7ac61107/scripts/gmail.com/gmail-tools.user.js
 // @run-at       document-start
 // @grant        GM_setValue
 // @grant        GM_getValue
@@ -45,10 +45,10 @@
         });
       };
 
-      const loaderCDN = 'https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/shared/camp-loader.js';
-      const loaderRaw = 'https://raw.githubusercontent.com/camp-plus/camp-xt/main/shared/camp-loader.js';
-      const utilsCDN = 'https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/shared/camp-utils.js';
-      const utilsRaw = 'https://raw.githubusercontent.com/camp-plus/camp-xt/main/shared/camp-utils.js';
+  const loaderCDN = 'https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@157c87e9f39d2721dd50084e1841eb7b7ac61107/shared/camp-loader.js';
+  const loaderRaw = 'https://raw.githubusercontent.com/camp-plus/camp-xt/157c87e9f39d2721dd50084e1841eb7b7ac61107/shared/camp-loader.js';
+  const utilsCDN = 'https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@157c87e9f39d2721dd50084e1841eb7b7ac61107/shared/camp-utils.js';
+  const utilsRaw = 'https://raw.githubusercontent.com/camp-plus/camp-xt/157c87e9f39d2721dd50084e1841eb7b7ac61107/shared/camp-utils.js';
 
       try {
         await new Promise((resolve, reject) => {

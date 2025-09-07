@@ -4,8 +4,8 @@
   if (window.__CAMP_ready && window.__CAMP_ready.then) return;
   if (window.__CAMP_injecting && window.__CAMP_injecting.then) return;
 
-  const overlayCDN = 'https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/shared/camp-overlay.js';
-  const overlayRaw = 'https://raw.githubusercontent.com/camp-plus/camp-xt/main/shared/camp-overlay.js';
+  const overlayCDN = 'https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@157c87e9f39d2721dd50084e1841eb7b7ac61107/shared/camp-overlay.js';
+  const overlayRaw = 'https://raw.githubusercontent.com/camp-plus/camp-xt/157c87e9f39d2721dd50084e1841eb7b7ac61107/shared/camp-overlay.js';
 
   const appendScript = (src) => new Promise((resolve, reject) => {
     try {
