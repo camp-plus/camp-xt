@@ -22,6 +22,10 @@ The project provides a small, idempotent loader script that ensures the overlay 
 
 Installers/userscripts now prefer to load the loader and then await `window.__CAMP_ready` so the overlay is only instantiated once per page.
 
+Recommended quick start (userscript-first)
+- Install `scripts/overlay-installer.user.js` in ViolentMonkey/Tampermonkey first (this defines the overlay in the page context).
+- Then install the site-specific userscripts (GitHub/Gmail/Jira) which will register tools with the already-present overlay.
+
 Notes on caching and updates
 - If you need the very latest code from `main` during development, use the raw URL with a cache-busting query parameter (e.g. `?_=TIMESTAMP`) or install directly from this repository using the bookmarklet.
 - For stable team installs, pin to a tag or commit SHA (e.g. `@v1.2.3` or `@<commit-sha>` on jsDelivr) to avoid surprising updates.
