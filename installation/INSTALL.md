@@ -7,8 +7,8 @@ Prerequisites
 - Access to the private `camp-plus/camp-xt` repository (main branch).
 
 One-click install
-- Open the hosted installer page and click "Fetch & Install latest":
-	- https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/installation/installer.html
+- Open the GitHub Pages installer and click "Fetch & Install latest":
+	- https://camp-plus.github.io/camp-xt/installer.html
 
 Direct install latest all-in-one script
 - Open this URL to have your userscript manager prompt to install:

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         CAMP-XT: Jira
 // @namespace    camp-xt/jira.atlassian.com
-// @version      1.0.3
+// @version      1.0.4
 // @description  CAMP tools for Jira
 // @author       CAMP Team
 // @match        https://jira.atlassian.com/*
@@ -91,7 +91,7 @@
         return;
       }
 
-  const camp = new CampOverlayCtor('Jira', '1.0.3');
+  const camp = new CampOverlayCtor('Jira', '1.0.4');
 
       camp.addScript('Quick Create', 'Open quick ticket creation dialog', () => {
         try {

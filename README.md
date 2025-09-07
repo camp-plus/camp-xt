@@ -8,8 +8,8 @@ CAMP-XT is a private, team-focused repository of ViolentMonkey userscripts and a
 
 - Install the single-file installer (recommended for most teams):
 
-- One-click install (opens hosted installer page):
-	- https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/installation/installer.html
+- One-click install (GitHub Pages hosted):
+	- https://camp-plus.github.io/camp-xt/installer.html
 
 - Direct install latest `overlay-all.user.js` (your userscript manager should prompt to install):
 	- https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/scripts/overlay-all.user.js
