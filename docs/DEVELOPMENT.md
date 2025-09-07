@@ -4,7 +4,7 @@ Coding standards and contribution guide for CAMP-XT userscripts.
 
 Overview
 - Use modern ES6+ syntax. Keep modules self-contained and resilient to DOM changes.
-- All userscripts must include `@updateURL` and `@downloadURL` pointing to `https://raw.githubusercontent.com/camp-plus/camp-xt/main/`.
+- All userscripts must include `@updateURL` and `@downloadURL` pointing to jsDelivr: `https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@<tag-or-commit>/...`.
 - Use semantic versioning in the `@version` header.
 
 File structure
@@ -19,7 +19,7 @@ Script template
 // ==UserScript==
 // @name         CAMP-XT: [Site Name]
 // @namespace    camp-xt/[site]
-// @version      1.0.1
+// @version      1.0.2
 // @description  CAMP tools for [Site Name]
 // @author       CAMP Team
 // @match        https://[site].com/*

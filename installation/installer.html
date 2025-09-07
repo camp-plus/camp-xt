@@ -8,22 +8,30 @@
   </head>
   <body>
     <h1>CAMP-XT One-click Installer</h1>
-    <p>This page will fetch the latest <code>overlay-all.user.js</code> directly from the repository with a cache-busting request and open it so your userscript manager can install it.</p>
+  <p>This page fetches the latest <code>overlay-all.user.js</code> with cache-busting and opens it so your userscript manager can install it.</p>
     <p>
       <button id="install">Fetch &amp; Install latest</button>
       <button id="view" style="margin-left:8px;background:#444">View source</button>
     </p>
     <pre id="log" style="display:none"></pre>
     <script>
-      const rawUrl = 'https://raw.githubusercontent.com/camp-plus/camp-xt/main/scripts/overlay-all.user.js';
+  const cdnUrl = 'https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/scripts/overlay-all.user.js';
+  const rawUrl = 'https://raw.githubusercontent.com/camp-plus/camp-xt/main/scripts/overlay-all.user.js';
 
       async function fetchAndOpen() {
         const log = document.getElementById('log');
         try {
           log.style.display = 'block';
           log.textContent = 'Fetching latest script...';
-          const res = await fetch(rawUrl, { cache: 'no-store', credentials: 'omit' });
-          if (!res.ok) throw new Error('Fetch failed: ' + res.status);
+          // Prefer CDN with cache-busting, fallback to raw
+          let res;
+          try {
+            res = await fetch(cdnUrl + '?_=' + Date.now(), { cache: 'no-store', credentials: 'omit' });
+          } catch (e) { /* ignore */ }
+          if (!res || !res.ok) {
+            res = await fetch(rawUrl + '?_=' + Date.now(), { cache: 'no-store', credentials: 'omit' });
+            if (!res.ok) throw new Error('Fetch failed: ' + res.status);
+          }
           const text = await res.text();
           log.textContent = 'Fetched ' + text.length + ' bytes. Preparing installer...';
 
@@ -42,7 +50,9 @@
 
       document.getElementById('install').addEventListener('click', fetchAndOpen);
       document.getElementById('view').addEventListener('click', async () => {
-        const res = await fetch(rawUrl + '?_=' + Date.now(), { cache: 'no-store' });
+  let res;
+  try { res = await fetch(cdnUrl + '?_=' + Date.now(), { cache: 'no-store' }); } catch (e) { /* ignore */ }
+  if (!res || !res.ok) { res = await fetch(rawUrl + '?_=' + Date.now(), { cache: 'no-store' }); }
         const t = await res.text();
         const w = window.open();
         w.document.write('<pre>' + escapeHtml(t) + '</pre>');

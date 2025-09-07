@@ -7,9 +7,14 @@ Prerequisites
 - Access to the private `camp-plus/camp-xt` repository (main branch).
 
 One-click install
-- Open ViolentMonkey dashboard and choose "Create new script" then paste the contents from the raw URL below and save.
+- Open the hosted installer page and click "Fetch & Install latest":
+	- https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/installation/installer.html
 
-CDN URLs (jsDelivr, recommended):
+Direct install latest all-in-one script
+- Open this URL to have your userscript manager prompt to install:
+	- https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/scripts/overlay-all.user.js
+
+CDN URLs (jsDelivr, recommended, pin for stability):
 - https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@157c87e9f39d2721dd50084e1841eb7b7ac61107/scripts/github.com/github-tools.user.js
 - https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@157c87e9f39d2721dd50084e1841eb7b7ac61107/scripts/gmail.com/gmail-tools.user.js
 - https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@157c87e9f39d2721dd50084e1841eb7b7ac61107/scripts/jira.atlassian.com/jira-tools.user.js
