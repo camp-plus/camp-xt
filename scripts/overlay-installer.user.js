@@ -37,6 +37,7 @@
           globalHotkey: 'Control+Shift+C',
           toastDuration: 3000
         }, options);
+        this.toggle = this.toggle.bind(this);
         this._init();
       }
 

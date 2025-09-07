@@ -29,7 +29,5 @@ Uninstall instructions
 - Open ViolentMonkey dashboard, find the CAMP-XT scripts, and disable or delete them.
 - Remove any injected scripts from the page by reloading.
 
-<!-- Bookmarklet removed: no longer supported or used -->
-
 Security
 - Scripts run with access to page DOM. Keep repository private and limit access to trusted team members.
