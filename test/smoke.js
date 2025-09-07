@@ -20,6 +20,9 @@ const path = require('path');
       };
     }
 
+  // Also expose to Node global so scripts referencing bare `localStorage` work
+  try { global.localStorage = window.localStorage; } catch (e) { /* ignore */ }
+
     // inject utils and overlay into the JSDOM window
     const elUtils = dom.window.document.createElement('script');
     elUtils.textContent = utilsSrc;
