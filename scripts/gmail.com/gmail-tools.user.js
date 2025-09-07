@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         CAMP-XT: Gmail
 // @namespace    camp-xt/gmail.com
-// @version      1.0.4
+// @version      1.0.5
 // @description  CAMP tools for Gmail
 // @author       CAMP Team
 // @match        https://mail.google.com/*
@@ -96,7 +96,7 @@
         return;
       }
 
-  const camp = new CampOverlayCtor('Gmail', '1.0.4');
+  const camp = new CampOverlayCtor('Gmail', '1.0.5');
 
       camp.addScript('Insert Template', 'Insert a canned response into compose', async () => {
         try {

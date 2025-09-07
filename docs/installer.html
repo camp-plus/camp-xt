@@ -16,56 +16,34 @@
   </head>
   <body>
     <h1>CAMP-XT One-click Installer</h1>
-    <p>This page fetches the latest <code>overlay-all.user.js</code> and opens it so your userscript manager can install it.</p>
+    <p>This page opens the latest <code>overlay-all.user.js</code> directly so your userscript manager can install it.</p>
     <p>
-      <button id="install">Fetch &amp; Install latest</button>
+      <button id="install">Install via CDN (latest)</button>
+      <button id="install-raw" style="margin-left:8px;background:#666">Install via Raw (no-cache)</button>
       <button id="view" style="margin-left:8px;background:#444">View source</button>
-      <a id="direct" style="margin-left:8px" href="#" target="_blank" rel="noopener">Open direct</a>
     </p>
     <pre id="log" style="display:none"></pre>
     <script>
       const cdnUrl = 'https://cdn.jsdelivr.net/gh/camp-plus/camp-xt@main/scripts/overlay-all.user.js';
       const rawUrl = 'https://raw.githubusercontent.com/camp-plus/camp-xt/main/scripts/overlay-all.user.js';
 
-      const direct = document.getElementById('direct');
-      direct.href = cdnUrl; // open direct install link in a new tab
+      document.getElementById('install').addEventListener('click', () => {
+        // Direct open via CDN with cache-busting query so managers detect and install
+        window.open(cdnUrl + '?_=' + Date.now(), '_blank', 'noopener');
+      });
 
-      async function fetchLatest() {
-        let res;
-        try {
-          res = await fetch(cdnUrl + '?_=' + Date.now(), { cache: 'no-store', credentials: 'omit' });
-        } catch (e) { /* ignore */ }
-        if (!res || !res.ok) {
-          res = await fetch(rawUrl + '?_=' + Date.now(), { cache: 'no-store', credentials: 'omit' });
-          if (!res.ok) throw new Error('Fetch failed: ' + res.status);
-        }
-        return res.text();
-      }
+      document.getElementById('install-raw').addEventListener('click', () => {
+        // Fallback: raw GitHub (no CDN cache), also triggers install in most managers
+        window.open(rawUrl + '?_=' + Date.now(), '_blank', 'noopener');
+      });
 
-      async function fetchAndOpen() {
-        const log = document.getElementById('log');
-        try {
-          log.style.display = 'block';
-          log.textContent = 'Fetching latest script...';
-          const text = await fetchLatest();
-          log.textContent = 'Fetched ' + text.length + ' bytes. Opening installer...';
-
-          const blob = new Blob([text], { type: 'text/javascript' });
-          const url = URL.createObjectURL(blob);
-          window.open(url, '_blank');
-          setTimeout(() => URL.revokeObjectURL(url), 2000);
-          log.textContent += '\nOpened installer in a new tab.';
-        } catch (err) {
-          log.textContent = 'Error: ' + (err && err.message ? err.message : String(err));
-        }
-      }
-
-      document.getElementById('install').addEventListener('click', fetchAndOpen);
       document.getElementById('view').addEventListener('click', async () => {
         const log = document.getElementById('log');
         log.style.display = 'block';
         try {
-          const text = await fetchLatest();
+          const res = await fetch(cdnUrl + '?_=' + Date.now(), { cache: 'no-store' });
+          const ok = res && res.ok ? res : await fetch(rawUrl + '?_=' + Date.now(), { cache: 'no-store' });
+          const text = await ok.text();
           const w = window.open();
           w.document.write('<pre>' + escapeHtml(text) + '</pre>');
           w.document.close();
